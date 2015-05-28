@@ -45,8 +45,7 @@ def countPlayers():
 def registerPlayer(name):
     """Adds a player to the tournament database.
 
-    The database assigns a unique serial id number for the player.  (This
-    should be handled by your SQL database schema, not in your Python code.)
+    The database assigns a unique serial id number for the player.
 
     Args:   name: the player's full name (need not be unique). """
     db = connect()
@@ -112,6 +111,7 @@ def swissPairings():
     pairs = []
     pairCount = countPlayers()/2
     standings = playerStandings()
+    # Combine every two players into a pair
     for i in range(0, pairCount):
         pairs.append((standings[i*2][0], standings[i*2][1],
                       standings[i*2+1][0], standings[i*2+1][1]))
