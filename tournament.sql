@@ -8,9 +8,7 @@
 CREATE TABLE players
 (
 id serial PRIMARY KEY,
-name text,
-wins integer,
-matches integer
+name text
 );
 
 CREATE TABLE matches
@@ -24,8 +22,25 @@ CREATE VIEW countPlayers AS
 SELECT count(*)
 FROM players;
 
-CREATE VIEW playerStandings AS
-SELECT *
+CREATE VIEW winCounts AS
+SELECT players.id, coalesce(count(matches.winner), 0) AS wins
 FROM players
-ORDER BY wins;
+LEFT OUTER JOIN matches
+ON players.id = matches.winner
+GROUP BY players.id;
 
+CREATE VIEW lossCounts AS
+SELECT players.id, coalesce(count(matches.loser), 0) AS losses
+FROM players
+LEFT OUTER JOIN matches
+ON players.id = matches.loser
+GROUP BY players.id;
+
+CREATE VIEW playerStandings AS
+SELECT players.id, players.name, winCounts.wins, winCounts.wins + lossCounts.losses AS matches
+FROM players
+LEFT OUTER JOIN winCounts
+ON players.id = winCounts.id
+LEFT OUTER JOIN lossCounts
+ON players.id = lossCounts.id
+ORDER BY wins;

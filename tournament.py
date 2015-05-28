@@ -50,7 +50,7 @@ def registerPlayer(name):
 
     Args:   name: the player's full name (need not be unique). """
     db = connect()
-    query = "INSERT INTO players (name, wins, matches) VALUES (%s, 0, 0)"
+    query = "INSERT INTO players (name) VALUES (%s)"
     c = db.cursor()
     c.execute(query, (bleach.clean(name),))
     db.commit()
@@ -70,7 +70,7 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    standing = []
+    standings = []
     db = connect()
     c = db.cursor()
     c.execute("SELECT * FROM playerStandings")
@@ -90,15 +90,6 @@ def reportMatch(winner, loser):
     query = "INSERT INTO matches (winner, loser) values (%s, %s)"
     c = db.cursor()
     c.execute(query, (bleach.clean(winner), bleach.clean(loser)))
-    db.commit()
-    query = "UPDATE players SET wins = wins + 1" \
-        ", matches = matches + 1" \
-        "WHERE id = %s"
-    c.execute(query, (bleach.clean(winner),))
-    db.commit()
-    query = "UPDATE players SET matches = matches + 1 " \
-        "WHERE id = %s"
-    c.execute(query, (bleach.clean(loser),))
     db.commit()
     db.close()
 
